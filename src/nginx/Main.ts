@@ -16,7 +16,12 @@ export default class Main {
     this.https.push(http);
   }
   formatter(): string {
-    return "";
+    let str = "";
+    str += this.Fields.map(e => e.formatter(0));
+    str += this.events.formatter(0);
+    str += this.https.map(e => e.formatter());
+    str = str.replace(/,/g, "");
+    return str;
   }
 
   print() {

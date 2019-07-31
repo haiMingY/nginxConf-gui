@@ -7,11 +7,14 @@ import NgEvents from "./NgEvents";
 import server from "./Server";
 import NgMap from "./NgMap";
 
-function create(type: string, path: Array<string>): Base {
-  path = path.filter(
+function filter(path: Array<string>, type: string = ""): Array<string> {
+  return path.filter(
     e => e && trim(e) && trim(e) !== "{" && e !== type.toLowerCase()
   );
-  let lower = type.toLowerCase();
+}
+
+function create(type: string, path: Array<string>): Base {
+  let lower = type.toLowerCase().trim();
   if (lower === "http") {
     return new Http();
   } else if (lower === "events") {
@@ -23,6 +26,7 @@ function create(type: string, path: Array<string>): Base {
   } else if (lower === "map") {
     return new NgMap(path);
   }
+  console.log("------type", type, "--------path", path);
   return new Base(path, "");
 }
 
@@ -47,15 +51,15 @@ export default class NgJson {
     let main = new Main();
     let queue: Array<Base> = [];
     ngItemArr.forEach(e => {
-      let item = e.trim();
-      let hasSiren = item.startsWith("#");
-      // main.setEvents
+      let hasSiren = e.trim().startsWith("#");
+      const reg = /[#|;]/g;
+      e = e.replace(reg, "");
       if (e.includes("{")) {
         let prevObj = queue[queue.length - 1];
-        if (hasSiren) e = e.replace("#", "");
-        let arr = e.split(" ");
+        let arr = filter(e.split(" "));
         let type = trim(arr[0]);
         let obj = create(type, normalize(arr));
+        obj.isComment = hasSiren;
         queue.push(obj);
         if (type === "events") {
           main.setEvents(obj);
@@ -67,24 +71,20 @@ export default class NgJson {
           }
         }
       } else if (e.includes("}")) {
-        let suffix = queue.pop();
+        queue.pop();
       } else {
         let prevObj = queue[queue.length - 1] || main;
         let item = new Item();
         if (!e.replace("#", "").trim()) {
           item.blankLine = true;
         } else {
-          const reg = /[#|;]/g;
           if (hasSiren) {
-            item.content = e.replace(reg, "");
+            item.content = e;
             item.isComment = hasSiren;
           } else {
-            let str = e
-              .replace(reg, "")
-              .trim()
-              .split(" ");
-            item.itemKey = str[0];
-            item.itemValue = normalize(str);
+            let str = e.trim().split(" ");
+            item.key = str[0];
+            item.value = normalize(str);
           }
         }
         prevObj.addFiled(item);

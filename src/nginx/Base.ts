@@ -2,7 +2,7 @@ import Item from "./Item";
 import { createSpace } from "./util";
 export default class Base {
   name: string = "";
-  isComment: Boolean = false; // 是不是注释
+  isComment: Boolean = false; // 注释?
   path: Array<string> = [];
   Fields: Array<Item> = [];
   children: Array<any> = [];
@@ -19,9 +19,13 @@ export default class Base {
   }
 
   formatter(n: number): string {
-    let str = createSpace(n) + this.name + " " + this.path.join(" ") + "{\n";
+    let str = "\n" + createSpace(n);
+    if (this.isComment) str += "#";
+    str += this.name + " " + this.path.join(" ") + " {\n";
     str += this.Fields.map(e => e.formatter(n + 2)) + "\n";
-    console.log(str);
-    return str;
+    str += this.children.map(e => e.formatter(n + 2));
+    str += "\n" + createSpace(n);
+    if (this.isComment) str += "#";
+    return str + "} \n";
   }
 }

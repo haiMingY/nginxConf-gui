@@ -24,3 +24,24 @@ ipcMain.on("showDialog", function name(event: any) {
     }
   );
 });
+
+ipcMain.on("getSavePathDialog", function(event: any) {
+  dialog.showOpenDialog(
+    {
+      title: "选择保存文件夹",
+      buttonLabel: "选择",
+      filters: [],
+      properties: ["openDirectory"]
+
+      // filters: [{
+      //     extensions: '.conf',
+      //     name: ''
+      // }]
+    },
+    result => {
+      // ipcMain.emit("sendPath", result);
+      console.log("------------result");
+      event.reply("saveData", result);
+    }
+  );
+});
