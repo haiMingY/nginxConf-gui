@@ -23,10 +23,4 @@ export default class Main {
     str = str.replace(/,/g, "");
     return str;
   }
-
-  print() {
-    console.log(this.Fields);
-    console.log(this.events.formatter(0));
-    console.log(this.https[0].formatter(0));
-  }
 }

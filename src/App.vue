@@ -27,11 +27,8 @@ export default class App extends Vue {
   }
 
   saveData(d: EventEmitter, paths: any) {
-    console.log(d);
-    console.log(paths);
-    let dir = paths[0];
-    let filePath = path.resolve(dir, "nginx.conf");
-    console.log("filePath", filePath);
+    if (!paths) return;
+    let filePath = path.resolve(paths[0], "nginx.conf");
     fs.writeFile(
       filePath,
       this.main,

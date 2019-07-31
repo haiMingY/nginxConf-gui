@@ -90,6 +90,7 @@ export default class NgJson {
         prevObj.addFiled(item);
       }
     });
+    console.log(main);
     return main;
   }
 }
